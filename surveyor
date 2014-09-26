@@ -1,0 +1,185 @@
+layers = {}
+xend = 5
+yend = 1
+zend = 60
+function turn(number)
+	if(number%2==0)then
+		turtle.turnRight()
+	else
+		turtle.turnLeft()
+	end
+end
+
+function turneven(number)
+	if(number%2==0)then
+		turtle.turnLeft()
+	else
+		turtle.turnRight()
+	end
+end
+
+function turnodd(number)
+	if(number%2==0)then
+		turtle.turnRight()
+	else
+		turtle.turnLeft()
+	end
+end
+
+function move()
+	local running = true
+	while running do
+		turtle.dig()
+		try = turtle.forward()
+		if(try==true)then
+			running = false
+		end
+		sleep(.1)
+	end
+end
+function checkinventory()
+	for box=1,16,1 do
+		if(turtle.getItemCount(box)==0)then
+			return false
+		end
+	end
+	return true
+end
+
+function unload(depth)
+	for derp=1,depth,1 do
+		turtle.up()
+	end
+	print("INVENTORY FULL")
+	print("Please unload but leave at least one of each block")
+	print(": Hit enter to Continue")
+	while true do
+		Event,key = os.pullEvent("key")
+		if(key==keys.enter)then
+			for derp=1,depth,1 do
+				turtle.down()
+			end
+			return
+		end
+	end
+end
+
+term.clear()
+term.setCursorPos(1,1)
+
+function printInterface(current)
+	term.clear()
+	term.setCursorPos(1,1)
+	print("Mining...")
+	print("fuel level: "..turtle.getFuelLevel())
+	print("Level "..depth.."/"..zend)
+	for y=1,5,1 do
+		for x=1,5,1 do
+			if(layers[current[x+5*(y-1)]]=="stone")then
+				term.setBackgroundColor(colors.gray)
+			elseif(layers[current[x+5*(y-1)]]=="coal")then
+				term.setBackgroundColor(colors.black)
+			elseif(layers[current[x+5*(y-1)]]=="iron")then
+				term.setBackgroundColor(colors.orange)
+			elseif(layers[current[x+5*(y-1)]]=="gold")then
+				term.setBackgroundColor(colors.gold)
+			elseif(layers[current[x+5*(y-1)]]=="redStone")then
+				term.setBackgroundColor(colors.red)
+			elseif(layers[current[x+5*(y-1)]]=="lapis")then
+				term.setBackgroundColor(colors.blue)
+			elseif(layers[current[x+5*(y-1)]]=="diamond")then
+				term.setBackgroundColor(colors.lightBlue)
+			elseif(layers[current[x+5*(y-1)]]=="dirt")then
+				term.setBackgroundColor(colors.brown)
+			elseif(layers[current[x+5*(y-1)]]=="sand")then
+				term.setBackgroundColor(colors.yellow)
+			elseif(layers[current[x+5*(y-1)]]=="gravel")then
+				term.setBackgroundColor(colors.lightGray)
+			elseif(layers[current[x+5*(y-1)]]=="grass")then
+				term.setBackgroundColor(colors.green)
+			elseif(layers[current[x+5*(y-1)]]=="emerald")then
+				term.setBackgroundColor(colors.lime)
+			else
+				term.setBackgroundColor(colors.white)
+			end
+			write(" ")
+		end
+		print()
+	end
+end
+
+layers[1]={"stone","stone","stone","stone","stone","stone","stone","stone","stone","stone","stone","stone","stone",
+"stone","stone","stone","stone","stone","stone","stone","stone","stone","stone","stone","stone","stone"}
+
+for depth=1,zend,1 do
+	currenty = 1
+	turtle.digDown()
+	turtle.down()
+	layers[depth]={}
+	printInterface(depth)
+	for rows=1,yend,1 do
+		currentx=1
+		for columns=1,xend-1,1 do
+			move()
+			full = checkinventory()
+			if(full==true)then
+				unload(depth)
+			end
+		end
+		if(rows<yend)then
+			if(depth%2==0)then
+				if(yend%2==0)then
+					turneven(rows)
+				else
+					turnodd(rows)
+				end
+			else
+				turn(rows)
+			end
+			move()
+			if(depth%2==0)then
+				if(yend%2==0)then
+					turneven(rows)
+				else
+					turnodd(rows)
+				end
+			else
+				turn(rows)
+			end
+		end
+	end
+	turn(2)
+	turn(2)
+	
+end
+print("Done")
+if(zend%2==0)then
+	for depth=1,zend,1 do
+		turtle.up()
+	end
+else
+	if(yend%2==0)then
+		turtle.turnRight()
+		for length=1,yend-1,1 do
+			move()
+		end
+		turtle.turnLeft()
+		for depth=1,zend,1 do
+			turtle.up()
+		end
+	else
+		for derp=1,xend-1,1 do
+			move()
+		end
+		turtle.turnLeft()
+		for derp=1,yend-1,1 do
+			move()
+		end
+		turtle.turnLeft()
+		for depth=1,zend,1 do
+			turtle.up()
+		end
+	end
+end
+
+printInterface(1)

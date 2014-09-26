@@ -1,0 +1,168 @@
+sideA = "a   "
+sideB = "b   "
+sideC = "c   "
+angleA = "A "
+angleB = "B "
+oldA = angleA
+oldB = angleB
+olda = sideA
+oldb = sideB
+oldc = sideC
+numsides = 0
+numangles = 0
+function title()
+	term.clear()
+	term.setCursorPos(1,1)
+end
+
+function drawTriangle()
+	term.setBackgroundColor(colors.black)
+	term.setTextColor(colors.white)
+	print("    |\\")
+	print("    | \\")
+	print("    |  \\")  
+	print("    |   \\")
+	print("    |    \\")
+	print("    |     \\")
+	print("    |      \\")
+	print("    |       \\")
+	print("    |        \\")
+	print("    |         \\")
+	print("    |          \\")
+	print("    |           \\")
+	print("    |_           \\")
+	print("    | |           \\")  
+	print("     --------------")
+	term.setBackgroundColor(colors.gray)
+	term.setCursorPos(23,16)
+	print("solve")
+	term.setCursorPos(30,16)
+	print("clear")
+	term.setBackgroundColor(colors.black)
+	drawparts()
+end
+
+function drawparts()
+	term.setBackgroundColor(colors.gray)
+	term.setCursorPos(6,3)
+	write(oldA)
+	term.setCursorPos(6,3)
+	write(angleA)
+	term.setCursorPos(17,14)
+	write(oldB)
+	term.setCursorPos(17,14)
+	write(angleB)
+	term.setCursorPos(1,8)
+	write(olda)
+	term.setCursorPos(1,8)
+	write(sideA)
+	term.setCursorPos(9,16)
+	write(oldb)
+	term.setCursorPos(9,16)
+	write(sideB)
+	term.setCursorPos(14,8)
+	write(oldc)
+	term.setCursorPos(14,8)
+	write(sideC)
+	term.setBackgroundColor(colors.black)
+end
+
+function pathagorium()
+	if(sideA~=olda and sideB~=oldb and sideC==oldc)then
+		sideC = math.sqrt(sideA^2 + sideB^2)
+		angleA = math.deg(math.atan(sideB/sideA))
+		angleB = 90-angleA
+	elseif(sideA~=olda and sideC~=oldc and sideB==oldb)then
+		sideB = math.sqrt(sideC^2 - sideA^2)
+		angleA = math.deg(math.acos(sideA/sideC))
+		angleB = 90-angleA
+	elseif(sideB~=oldb and sideC~=oldc and sideA==olda)then
+		sideA = math.sqrt(sideC^2 - sideB^2)
+		angleA = math.deg(math.asin(sideB/sideC))
+		angleB = 90-angleA
+	end	
+end
+
+function solve()
+	if(numangles==0 and numsides==2)then
+		pathagorium()
+	elseif(angleA~=oldA and angleB==oldB and numsides>0)then
+		if(sideA~=olda and sideB==oldb)then
+			sideB = math.tan(math.rad(angleA))*sideA
+			pathagorium()
+		elseif(sideB~=oldb and sideA==olda)then
+			sideA = sideB/math.tan(math.rad(angleA))
+			pathagorium()
+		elseif(sideC~=old and sideB==oldb)then
+			sideB = math.sin(math.rad(angleA))*sideC
+			pathagorium()
+		end
+	elseif(angleB~=oldB and angleA==oldA and numsides>0)then
+		if(sideB~=oldb and sideA==olda)then
+			sideA = math.tan(math.rad(angleB))*sideB
+			pathagorium()
+		elseif(sideA~=olda and sideB==oldb)then
+			sideB = sideA/math.tan(math.rad(angleB))
+			pathagorium()
+		elseif(sideC~=oldc and sideA==olda)then
+			sideA = math.sin(math.rad(angleB))*sideC
+			pathagorium()
+		end
+	else
+		term.setTextColor(colors.red)
+		term.setCursorPos(15,17)
+		print("Not enough information")
+		sleep(2)
+	end 
+end
+
+while true do
+	title()
+	drawTriangle()
+	local Event,button,xcord,ycord = os.pullEvent("mouse_click")
+	local x,y = term.getSize()
+	if(ycord==3)then
+		if(xcord>=6 and xcord<=7)then
+			term.setCursorPos(6,3)
+			angleA=io.read()
+			angleA = tonumber(angleA)
+			numangles = numangles+1
+		end
+	elseif(ycord==8)then
+		if(xcord<=4)then
+			term.setCursorPos(1,8)
+			sideA=io.read()
+			sideA = tonumber(sideA)
+			numsides = numsides+1
+		elseif(xcord>=14 and xcord<=17)then
+			term.setCursorPos(14,8)
+			sideC=io.read()
+			sideC = tonumber(sideC)
+			numsides = numsides+1
+		end
+	elseif(ycord==14)then
+		if(xcord>=17 and xcord<=18)then
+			term.setCursorPos(17,14)
+			angleB=io.read()
+			angleB = tonumber(angleB)
+			numangles = numangles+1
+		end
+	elseif(ycord==16)then
+		if(xcord>=9 and xcord<=12)then
+			term.setCursorPos(9,16)
+			sideB=io.read()
+			sideB = tonumber(sideB)
+			numsides = numsides+1
+		elseif(xcord>=23 and xcord<=27)then
+			solve()
+		elseif(xcord>=30 and xcord<=34)then
+			sideA = olda
+			sideB = oldb
+			sideC = oldc
+			angleA = oldA
+			angleB = oldB
+			numsides = 0
+			numangles = 0
+		end
+	end
+end

@@ -1,0 +1,72 @@
+playerx = 45
+playery = 10
+mobx = 10
+moby = 10
+maze = {}
+
+for y=1,19,1 do
+	for x=1,51,1 do
+		maze[y] = {}
+		maze[y][1] = x
+		maze[y][2] = "O"
+	end
+end
+
+function drawStage()
+	term.setBackgroundColor(colors.gray)
+	for place=4,15,1 do
+		maze[(place-3)*51-30][2] = "C"
+		term.setCursorPos(21,place)
+		write(" ")
+	end
+	term.setBackgroundColor(colors.green)
+	term.setCursorPos(playerx,playery)
+	write(" ")
+	term.setBackgroundColor(colors.red)
+	term.setCursorPos(mobx,moby)
+	write(" ")
+	term.setBackgroundColor(colors.black)
+end
+
+function canMove()
+	forward = true
+	up = true
+	down = true
+	backward = true
+	for place=1,#maze,1 do
+		for name,msg in maze[place]:gmatch("([^%s]+)-(.*)") do
+			x = name
+			y = msg
+		end
+		if(mobx+1==x and moby==y and forward)then
+			forward = false
+		elseif(moby-1==y and mobx==x and up)then
+			up = false
+		elseif(moby+1==y and mobx==x and down)then
+			down = false
+		elseif(mobx-1==x and moby==y and backward)then
+			backward = false
+		end
+		write(x.." "..y.."-")
+		print(mobx.." "..moby)
+	end
+	return forward,up,down,backward
+end
+
+while true do
+	shell.run("clear")
+	drawStage()
+	--print(textutils.serialize(maze))
+	local f,u,d,b = canMove()
+	--print(f,u,d,b)
+	if(f)then
+		mobx = mobx+1
+	elseif(u)then
+		moby = moby-1
+	elseif(d)then
+		moby = moby+1
+	elseif(b)then
+		mobx = mobx-1
+	end
+	sleep(1)
+end

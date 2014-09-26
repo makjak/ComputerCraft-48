@@ -1,0 +1,18 @@
+color = {colors.white,colors.red,colors.lightBlue,colors.blue,colors.yellow,colors.lime,colors.purple,colors.pink,colors.orange}
+x,y = term.getSize()
+x = math.ceil(x/6)
+y = math.ceil(y/6)
+while true do
+  for yval=0,(y-1),1 do
+    for xval=0,(x-1),1 do
+      term.setBackgroundColor(color[math.random(table.getn(color))])
+      for place= 1,y,1 do
+        term.setCursorPos(xval*(x),yval*(y)+(place-1))
+        for derp=1,x,1 do
+          write(" ")
+        end
+      end
+    end
+  end 
+  sleep(.1)
+end

@@ -1,0 +1,20 @@
+contents = {}
+words = {}
+count = 1
+open = fs.open("hangmanwords/words","r")
+temp = open.readLine()
+while temp~=nil do
+  contents[count] = temp
+  temp = open.readLine()
+  count = count+1
+end
+print(textutils.serialize(contents))
+open.close()
+open = fs.open("hangmanwords/words","w")
+
+for place=1,#contents,1 do
+    open.write(contents[place]..",")
+end
+open.close()
+
+

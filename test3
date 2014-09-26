@@ -1,0 +1,45 @@
+term.clear()
+os.loadAPI("pages")
+mainPage = pages.addPage()
+
+function initializeObjects()
+  button = pages.newButton("Test Button",1,1,13,3,colors.white,colors.black,function()end)
+    mainPage.pageContent.addObject("button",button)
+  exit = pages.newButton(" x ",49,1,3,1,colors.red,colors.white,function() running = false end)
+    mainPage.pageContent.addObject("button",exit)
+  lable = pages.newLabel({"Hello","World"},10,10,10,3,true,true,colors.gray,colors.white)
+    mainPage.pageContent.addObject("lable",lable)
+  pb = pages.newProgressBar(1,18,52,"Loading",colors.lime,colors.gray,colors.white)
+    mainPage.pageContent.addObject("progressBar",pb)
+  dd = pages.newDropDown("Drop Down",25,10,10,colors.blue,colors.white,colors.gray,colors.white)
+    mainPage.pageContent.addObject("dropDown",dd)
+  sb1 = pages.newScrollBar(1,19,30,10,true,colors.lightGray,colors.gray,colors.lightGray,colors.gray)
+    mainPage.pageContent.addObject("scrollBar",sb1)
+end
+
+function clear()
+  term.setBackgroundColor(colors.black)
+  term.clear()
+end
+
+function displayObjects(oType)
+  for _,i in ipairs(mainPage.pageContent.getObjects(oType)) do
+     i.draw()
+  end
+end
+
+function testClick(oType,x,y)
+  for _,i in ipairs(mainPage.pageContent.getObjects(oType))do
+    i.clicked(x,y)
+  end
+end
+
+running = true
+initializeObjects()
+displayObjects("*")
+while running do
+  clear()
+  displayObjects("*")
+  event,key,x,y = os.pullEvent("mouse_click")
+  testClick("button",x,y)
+end

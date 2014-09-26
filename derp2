@@ -1,0 +1,5 @@
+open = fs.open("hangmanwords/words","w")
+for place=1,40,1 do
+  open.write(place)
+end
+open.close()

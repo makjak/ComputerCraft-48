@@ -1,0 +1,109 @@
+startx = -1
+starty = -1
+shell.run("clear")
+while true do
+	term.setBackgroundColor(colors.black)
+	Event,key,xclick,yclick = os.pullEvent()
+	if(Event=="mouse_drag" or Event=="mouse_click")then
+		shell.run("clear")
+		if(xclick==startx or startx==-1)then
+			if(yclick==starty or starty==-1)then
+				startx = xclick 
+				starty = yclick
+			end
+		else
+			term.setBackgroundColor(colors.gray)
+			term.setCursorPos(startx,yclick)
+			if(yclick<=starty)then
+				for derp=1,starty-yclick,1 do 
+					write(" ") 
+					term.setCursorPos(startx,yclick+derp)
+				end
+			else
+				for derp=1,yclick-starty,1 do 
+					write(" ") 
+					term.setCursorPos(startx,yclick-derp)
+				end
+			end
+			if(xclick>=startx)then
+				term.setCursorPos(startx,starty)
+				for derp=1,xclick-startx,1 do 
+					write(" ")
+				end
+			else
+				term.setCursorPos(xclick+1,starty)
+				for derp=1,startx-xclick,1 do 
+					write(" ")
+				end
+			end
+			if(xclick>=startx)then
+				term.setCursorPos(startx,yclick)
+				for derp=1,xclick-startx,1 do 
+					write(" ")
+				end
+			else
+				term.setCursorPos(xclick,yclick)
+				for derp=1,startx-xclick,1 do 
+					write(" ")
+				end
+			end
+			term.setCursorPos(xclick,yclick)
+			if(yclick<=starty)then
+				for derp=1,starty-yclick+1,1 do 
+					write(" ") 
+					term.setCursorPos(xclick,yclick+derp)
+				end
+			else
+				for derp=1,yclick-starty+1,1 do 
+					write(" ") 
+					term.setCursorPos(xclick,yclick-derp)
+				end
+			end
+			term.setCursorPos(startx,starty)
+			write(startx..","..starty)
+			term.setCursorPos(xclick-4,yclick)
+			write(xclick..","..yclick)
+			oldx = xclick
+			oldy = yclick
+		end
+	elseif(Event=="key")then
+		if(key==keys.enter)then
+			shell.run("clear")
+			if(oldx<startx)then
+				if(oldy<starty)then
+					newx = oldx
+					newy = oldy
+					l = startx-oldx
+					w = starty-oldy
+				else
+					newx = oldx
+					newy = starty
+					l = startx-oldx
+					w = oldy-starty
+				end
+			else
+				if(oldy<starty)then
+					newx = startx
+					newy = oldy
+					l = oldx-startx
+					w = starty-oldy
+				else	
+					newy = starty
+					newx = startx
+					l = oldx-startx
+					w = oldy-starty
+				end
+			end
+			term.setBackgroundColor(colors.white)
+			for y=0,w,1 do
+				for x=0,l,1 do
+					term.setCursorPos(newx+x,newy+y)
+					write(" ")
+				end
+			end
+			startx = -1
+			starty = -1
+			--break
+		end
+	end	
+end

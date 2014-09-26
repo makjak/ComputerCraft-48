@@ -1,0 +1,10 @@
+function test()
+  local t = {1,2,3,4}
+  return 1,t
+end
+
+a,b = test()
+print(a)
+for place=1,#b,1 do
+  print(b[place])
+end

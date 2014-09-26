@@ -1,0 +1,482 @@
+content = 
+{
+	main = 
+	{
+		background = nil,
+		visible = false,
+		setBackground = function(path)
+			content.main.background = paintutils.loadImage(path)
+		end,
+		getBackground = function()
+			return content.main.background
+		end,
+		getPageContent = function()
+			return pageContent
+		end,
+		pageContent = 
+		{
+			buttons = {},
+			labels = {},
+			dropDowns = {},
+			images = {},
+			scrollBars = {},
+			getButtons = function()
+				return content.main.pageContent.buttons
+			end,
+			addButton = function(text,xpos,ypos,wid,high,c,tc,v,f)
+				content.main.pageContent.buttons[#content.main.pageContent.buttons+1] = 
+									  {name = text,x = xpos,y = ypos
+									  ,width = wid,height = high,color = c
+									  ,textcolor = tc, visible = v, buttonFunction = f}
+				return content.main.pageContent.buttons[#content.main.pageContent.buttons]
+			end,
+			drawButton = function(index)
+					b = content.main.pageContent.buttons[index]
+				if(b.visible)then
+					drawing.fillArea(b.color,b.x,b.y,b.width,b.height)      
+					drawing.writeTextCentered(b.name,b.x,b.y,b.width,b.height,b.textcolor,b.color)
+				end
+			end,
+			getLabels = function()
+				return content.main.pageContent.labels
+			end,
+			addLabel = function(text,xpos,ypos,l,cent,c,tc)
+				content.main.pageContent.labels[#content.main.pageContent.labels+1] = 
+									{name = text,x = xpos,y = ypos,labelLength = l,centered = cent,color = c,textcolor = tc}
+				return content.main.pageContent.labels[#content.main.pageContent.labels]
+			end,
+			setLabelText = function(index,text)
+				content.main.pageContent.labels[index].name = text
+			end,
+			drawLabel = function(index)
+
+				b = content.main.pageContent.labels[index]
+				drawing.fillArea(b.color,b.x,b.y,b.labelLength,1)
+				if(b.centered)then
+					drawing.writeTextCentered(b.name,b.x,b.y,b.labelLength,1,b.textcolor,b.color)
+				else
+					drawing.writeText(b.name,b.x,b.y,b.textcolor,b.color)
+				end
+			end,
+			addImage = function(i,xpos,ypos)
+				content.main.pageContent.images[#content.main.pageContent.images+1] = {image = paintutils.loadImage(i),x = xpos,y = ypos}
+				return content.main.pageContent.images[#content.main.pageContent.images]
+			end,
+			getImages = function()
+				return content.main.pageContent.images
+			end,
+			drawImage = function(index)
+				i=content.main.pageContent.images[index]
+				drawing.displayImage(i.image,i.x,i.y)
+			end,
+			addDropDown = function(n,xpos,ypos,l,c,tc,ddc,ddtc)
+				content.main.pageContent.dropDowns[#content.main.pageContent.dropDowns+1] = {name = n,x = xpos,y = ypos,dropDownLength = l,color = c,textColor = tc, dropDownColor = ddc,dropDownTextColor = ddtc,visible = false,elements = {}}
+				return content.main.pageContent.dropDowns[#content.main.pageContent.dropDowns]
+			end,
+			addDropDownElement = function(index,n,f)
+				content.main.pageContent.dropDowns[index].elements[#content.main.pageContent.dropDowns[index].elements+1] = {name = n,elementFunction = f}
+			end,
+			drawDropDown = function(index)
+				d=content.main.pageContent.dropDowns[index]
+				drawing.fillArea(d.color,d.x,d.y,d.dropDownLength,1)
+				drawing.writeText(d.name,d.x,d.y,d.color,d.textColor)
+				if(content.main.pageContent.dropDowns[index].visible)then
+					drawing.fillArea(d.dropDownColor,d.x,d.y+1,d.dropDownLength,#content.main.pageContent.dropDowns[index].elements)
+					for i=1,#content.main.pageContent.dropDowns[index].elements,1 do
+						drawing.writeText(d.elements[i].name,d.x,d.y+i,d.dropDownColor,d.dropDownTextColor)
+					end
+				end
+			end,
+			getDropDowns = function()
+				return content.main.pageContent.dropDowns
+			end,
+			addScrollBar = function(xpos,ypos,l,ia,s,bgc,bc,ac,tc)
+				content.main.pageContent.scrollBars[#content.main.pageContent.scrollBars+1] = {x = xpos,y = ypos,length = l,itemAmount = ia,sideWays = s,backGroundColor = bgc,barColor = bc,arrowColor = ac,textColor = tc,scroll = 0}
+				return content.main.pageContent.scrollBars[#content.main.pageContent.scrollBars]
+			end,
+			getScrollBars = function()
+				return content.main.pageContent.scrollBars
+			end,
+			drawScrollBar = function(index)
+				s = content.main.pageContent.scrollBars[index]
+				if(s.sideWays)then
+					drawing.fillArea(s.backGroundColor,s.x+1,s.y,s.length,1)
+					drawing.writeText("<",s.x,s.y,s.arrowColor,s.textColor)
+					drawing.writeText(">",s.x+s.length+1,s.y,s.arrowColor,s.textColor)
+				else
+					drawing.fillArea(s.backGroundColor,s.x,s.y+1,1,s.length)
+					drawing.writeText("^",s.x,s.y,s.arrowColor,s.textColor)
+					drawing.writeText("v",s.x,s.y+s.length+1,s.arrowColor,s.textColor)
+				end
+				
+				local barLength = s.length
+				if(s.itemAmount>=s.length*2-1)then
+					barLength = 1
+				elseif(s.itemAmount>=s.length)then
+					barLength = s.length-(s.itemAmount-s.length)+2
+				end
+				--print(barLength)
+				--sleep(1)
+				if(s.sideWays)then
+					drawing.fillArea(s.barColor,s.x+s.scroll+1,s.y,s.x+barLength,1)
+				else
+					drawing.fillArea(s.barColor,s.x,s.y+s.scroll+1,1,barLength)
+				end
+			end
+		}
+		
+	},
+	pages = {}
+}
+
+content.pages = 
+{
+	content.main,
+}
+
+drawing = 
+{
+	displayImage = function(image,x,y)
+		paintutils.drawImage(image,x,y)
+	end,
+	fillArea = function(color,xpos,ypos,wid,high)
+		term.setCursorPos(1,1)
+
+		term.setBackgroundColor(color)
+		for y=ypos,ypos+high-1,1 do
+			for x=xpos,xpos+wid-1,1 do
+				term.setCursorPos(x,y)
+				write(" ")
+			end
+		end
+	end,
+	writeText = function(text,x,y,color,bgcolor)
+		term.setBackgroundColor(color)
+		term.setCursorPos(x,y)
+		write(text)
+	end,
+	writeTextCentered = function(text,x,y,wid,high,color,bgcolor)
+		term.setCursorPos(x+(wid-#text)/2,y+high/2)
+		term.setTextColor(color)
+		term.setBackgroundColor(bgcolor)
+		term.write(text)
+	end,
+	clear = function()
+		term.setBackgroundColor(colors.black)
+		term.clear()
+		term.setCursorPos(1,1)
+	end
+}
+
+function drawBoarders(frame)
+	local x,y = frame.getSize()
+	frame.setBackgroundColor(colors.gray)
+	for i=1,x,1 do
+		frame.setCursorPos(i,1)
+		frame.write(" ")
+		frame.setCursorPos(i,y)
+		frame.write(" ")
+	end
+	for i=1,y,1 do
+		frame.setCursorPos(1,i)
+		frame.write(" ")
+		frame.setCursorPos(x,i)
+		frame.write(" ")
+	end
+end
+
+function fillBackground(frame)
+	frame.setBackgroundColor(colors.white)
+	local x,y = frame.getSize()
+	for a=1,y,1 do
+		for b=1,x,1 do
+			frame.setCursorPos(b,a)
+			frame.write(" ")
+		end
+	end
+end
+
+function setUpWindow(frame)
+	local x,y = frame.getSize()
+	fillBackground(frame)
+	drawBoarders(frame)
+	frame.setBackgroundColor(colors.red)
+	frame.setTextColor(colors.white)
+	frame.setCursorPos(x-2,1)
+	--frame.write(" x ")
+end
+
+function serverSelectWindow()
+	local myWindow = window.create(term.current(),15,5,30,10)
+	setUpWindow(myWindow)
+	myWindow.setBackgroundColor(colors.gray)
+	myWindow.setTextColor(colors.white)
+	myWindow.setCursorPos(12,1)
+	myWindow.write("Server")
+	myWindow.setBackgroundColor(colors.white)
+	myWindow.setTextColor(colors.black)
+	myWindow.setCursorPos(2,2)
+	myWindow.write("Type the ID of the server")
+	myWindow.setCursorPos(2,3)
+	myWindow.write("you would like to connect to")
+	term.redirect(myWindow)
+	term.setCursorPos(2,4)
+	term.write("> ")
+	server = read()
+	term.redirect(term.native())
+	myWindow.reposition(20,53)
+end
+
+function uploadWindow()
+	local myWindow = window.create(term.current(),15,5,30,10)
+	setUpWindow(myWindow)
+	myWindow.setBackgroundColor(colors.gray)
+	myWindow.setTextColor(colors.white)
+	myWindow.setCursorPos(12,1)
+	myWindow.write("Upload")
+	myWindow.setBackgroundColor(colors.white)
+	myWindow.setTextColor(colors.black)
+	myWindow.setCursorPos(2,2)
+	myWindow.write("Type the name of the program")
+	myWindow.setCursorPos(2,3)
+	myWindow.write("you would like to upload")
+	term.redirect(myWindow)
+	term.setCursorPos(2,4)
+	term.write("> ")
+	file = read()
+	if(fs.exists(file)==false)then
+		myWindow.setCursorPos(2,5)
+		myWindow.setTextColor(colors.red)
+		myWindow.write("File does not exist")
+		sleep(2)
+	else
+		term.redirect(term.native())
+		myWindow.reposition(20,53)
+		return file
+	end
+	term.redirect(term.native())
+	myWindow.reposition(20,53)
+end
+
+function searchWindow()
+	local myWindow = window.create(term.current(),15,5,30,5)
+	setUpWindow(myWindow)
+	myWindow.setBackgroundColor(colors.gray)
+	myWindow.setTextColor(colors.white)
+	myWindow.setCursorPos(12,1)
+	myWindow.write("Search")
+	myWindow.setBackgroundColor(colors.white)
+	myWindow.setTextColor(colors.black)
+	term.redirect(myWindow)
+	term.setCursorPos(2,3)
+	term.write("> ")
+	search = read()
+	term.redirect(term.native())
+	myWindow.reposition(20,53)
+end
+
+function downloadWindow()
+	local myWindow = window.create(term.current(),15,5,30,5)
+	setUpWindow(myWindow)
+	myWindow.setBackgroundColor(colors.gray)
+	myWindow.setTextColor(colors.white)
+	myWindow.setCursorPos(11,1)
+	myWindow.write("Download")
+	myWindow.setBackgroundColor(colors.white)
+	myWindow.setTextColor(colors.black)
+	myWindow.setCursorPos(2,2)
+	myWindow.write("Name of new file")
+	term.redirect(myWindow)
+	term.setCursorPos(2,3)
+	term.write("> ")
+	newFile = read()
+	if(fs.exists(newFile))then
+		myWindow.setCursorPos(2,4)
+		myWindow.setTextColor(colors.red)
+		myWindow.write("File already exist")
+		sleep(2)
+	else
+		term.redirect(term.native())
+		myWindow.reposition(20,53)
+		return newFile
+	end
+	term.redirect(term.native())
+	myWindow.reposition(20,53)
+end
+
+function requestFiles()
+	rednet.send(serverID,"getFiles")
+	id,newFiles = rednet.receive(1)
+	return newFiles
+end
+
+function setColors(index)
+
+	for i=1,#fileSelectors,1 do
+		content.main.pageContent.buttons[i].color = colors.white
+	end
+	if(index==-1)then
+		content.main.pageContent.buttons[19+2].visible = false
+	else
+		content.main.pageContent.buttons[index].color = colors.lightGray
+	end
+end
+
+function addSpaces(text,length)
+	temp = text
+	for i=#text,length,1 do
+		temp = temp.." "
+	end
+	return temp
+end
+
+function writeFiles(offset)
+	local termWidth,termHeight = term.getSize()
+	if(termHeight>#files)then
+		amount = #files
+	else
+		amount = termHeight-1
+	end
+
+	for i=1,amount,1 do
+		fileSelectors[i].name = addSpaces(files[i+offset],49)
+	end
+end
+
+function drawPageContent()
+	showButtons(currentPage.pageContent.getButtons())
+	showLabels(currentPage.pageContent.getLabels())
+	showImages(currentPage.pageContent.getImages())
+	showDropDowns(currentPage.pageContent.getDropDowns())
+	showScrollBars(currentPage.pageContent.getScrollBars())
+end
+
+function showButtons(buttons)
+	for x=1,#buttons,1 do
+		currentPage.pageContent.drawButton(x)
+	end
+end
+
+function showLabels(labels)
+	for x=1,#labels,1 do
+		currentPage.pageContent.drawLabel(x)
+	end
+end
+
+function showImages(images)
+	for x=1,#images,1 do
+		currentPage.pageContent.drawImage(x)
+	end
+end
+
+function showDropDowns(dropDowns)
+	for x=1,#dropDowns,1 do
+		currentPage.pageContent.drawDropDown(x)
+	end
+end
+
+function showScrollBars(scrollBars)
+	for x=1,#scrollBars,1 do
+		currentPage.pageContent.drawScrollBar(x)
+	end
+end
+
+function analyseClick(xpos,ypos)
+	buttons = currentPage.pageContent.getButtons()
+	for i=1,#buttons,1 do
+		if(xpos>=buttons[i].x and xpos<=buttons[i].x+buttons[i].width-1) then
+			if(ypos>=buttons[i].y and ypos<=buttons[i].y+buttons[i].height-1) then
+				buttons[i].buttonFunction()
+			end
+		end
+	end
+	dropDowns = currentPage.pageContent.getDropDowns()
+	for i=1,#dropDowns,1 do
+		if(xpos>=dropDowns[i].x and xpos<=dropDowns[i].x+dropDowns[i].dropDownLength-1) then
+			if(ypos==dropDowns[i].y) then
+				dropDowns[i].visible = not dropDowns[i].visible
+			elseif (dropDowns[i].visible) then 	
+				for a=1,#dropDowns[i].elements,1 do
+					if(ypos==dropDowns[i].y+a) then
+						dropDowns[i].elements[a].elementFunction()
+					end
+				end
+			end
+		end
+	end
+	scrollBars = currentPage.pageContent.getScrollBars()
+	for i=1,#scrollBars,1 do
+		local barLength = scrollBars[i].length
+		if(scrollBars[i].itemAmount>=scrollBars[i].length*2-1)then
+			barLength = 1
+		elseif(scrollBars[i].itemAmount>=scrollBars[i].length)then
+			barLength = scrollBars[i].length-(scrollBars[i].itemAmount-scrollBars[i].length)+2
+		end
+		if(xpos==scrollBars[i].x) then
+			if(ypos==scrollBars[i].y) then
+				if(scrollBars[i].scroll>0)then
+					scrollBars[i].scroll = scrollBars[i].scroll-1
+					setColors(-1)
+				end
+			end
+		end
+		if(xpos==scrollBars[i].x+scrollBars[i].length+1) then
+			if(ypos==scrollBars[i].y) then
+				if(scrollBars[i].scroll+barLength<scrollBars[i].length)then
+					scrollBars[i].scroll = scrollBars[i].scroll+1
+					setColors(-1)
+				end
+			end
+		end
+		if(xpos==scrollBars[i].x) then
+			if(ypos==scrollBars[i].y+scrollBars[i].length+1) then
+				if(scrollBars[i].scroll+barLength<scrollBars[i].length)then
+					scrollBars[i].scroll = scrollBars[i].scroll+1
+					setColors(-1)
+				end
+			end
+		end
+	end
+end 
+
+running = true
+currentPage = content.pages[1]
+local termWidth,termHeight = term.getSize()
+files  = {}
+for i=1,8,1 do
+	files[i] = "test"..i
+end
+serverID = 0
+
+content.main.setBackground("fileClientBG")
+content.main.pageContent.addLabel("File Cloud Client",1,1,17,false,colors.white,colors.blue)
+fileSelectors = {}
+
+for i=2,termHeight,1 do
+	if(#files>=termHeight-1)then
+			fileSelectors[#fileSelectors+1] = content.main.pageContent.addButton("",1,i,termWidth-1,1,colors.white,colors.black,true,function() setColors(i-1) content.main.pageContent.buttons[termHeight+2].visible = true  content.main.pageContent.buttons[termHeight+2].y = i end)
+	elseif(i-1<=#files)then
+			fileSelectors[#fileSelectors+1] = content.main.pageContent.addButton("",1,i,termWidth-1,1,colors.white,colors.black,true,function() setColors(i-1) content.main.pageContent.buttons[termHeight+2].visible = true  content.main.pageContent.buttons[termHeight+2].y = i end)
+	else
+			fileSelectors[#fileSelectors+1] = content.main.pageContent.addButton("",1,i,termWidth-1,1,colors.white,colors.black,true,function() setColors(i-1) content.main.pageContent.buttons[termHeight+2].visible = false  content.main.pageContent.buttons[termHeight+2].y = i end)
+	end
+end
+content.main.pageContent.addButton("Upload",20,1,6,1,colors.lightBlue,colors.white,true,function() uploadWindow() end)
+content.main.pageContent.addButton("Refresh",28,1,7,1,colors.lightBlue,colors.white,true,function() f = requestFiles() if(f~=nill)then files = f end end)
+content.main.pageContent.addButton("Download",termWidth-9,2,8,1,colors.blue,colors.white,false,function() downloadWindow() end)
+content.main.pageContent.addButton(" X ",49,1,3,1,colors.red,colors.white,true,function() running = false end)
+content.main.pageContent.addDropDown("Options",37,1,10,colors.lightBlue,colors.white,colors.lightGray,colors.white)
+	content.main.pageContent.addDropDownElement(1,"Server",function() serverSelectWindow() end)
+	content.main.pageContent.addDropDownElement(1,"Search",function() searchWindow() end)
+content.main.pageContent.addScrollBar(termWidth,2,16,#files,false,colors.lightGray,colors.gray,colors.gray,colors.white)
+
+
+while running do
+	drawing.clear()
+	drawing.displayImage(currentPage.getBackground(),1,1)
+	writeFiles(content.main.pageContent.scrollBars[1].scroll)
+	drawPageContent()
+	event, button, x, y = os.pullEvent("mouse_click")
+	analyseClick(x,y)
+end
+drawing.clear()

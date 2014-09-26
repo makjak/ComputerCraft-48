@@ -1,0 +1,439 @@
+
+colorTable = {colors.red,colors.blue,colors.green,colors.orange,colors.purple,colors.lime,colors.yellow,colors.pink,colors.lightBlue,colors.gray,colors.lightGray,colors.brown}
+
+gravity = true
+collisions = true
+noclip = false
+
+inside = false
+below = false
+drag = false
+object = {}
+object[1] = {}
+object[1]["x1"] = 25
+object[1]["y1"] = 10
+object[1]["x2"] = 28
+object[1]["y2"] = 12
+
+for place=1,math.random(3,5),1 do
+	object[place] = {}
+	object[place]["x1"] = math.ceil(math.random(1,51))
+	object[place]["y1"] = math.ceil(math.random(1,19))
+	object[place]["x2"] = math.ceil(object[place]["x1"]+math.random(1,5))
+	object[place]["y2"] = math.ceil(object[place]["y1"]+math.random(1,5))
+	object[place]["color"] = colorTable[math.random(1,12)]
+end
+
+for place=1,#object,1 do
+	object[place]["xlength"] = object[place]["x2"]-object[place]["x1"]
+	object[place]["ylength"] = object[place]["y2"]-object[place]["y1"]
+end
+selected = 0
+
+function drawOptions()
+	term.setTextColor(colors.white)
+	term.setCursorPos(1,1)
+	if(gravity)then
+		term.setBackgroundColor(colors.green)	
+	else
+		term.setBackgroundColor(colors.red)
+	end
+	write("Gravity")
+	term.setCursorPos(9,1)
+	if(collisions)then
+		term.setBackgroundColor(colors.green)	
+	else
+		term.setBackgroundColor(colors.red)
+	end
+	write("Collisions")
+	term.setCursorPos(20,1)
+	if(noclip)then
+		term.setBackgroundColor(colors.green)	
+	else
+		term.setBackgroundColor(colors.red)
+	end
+	write("NoClip")
+	term.setCursorPos(49,1)
+	term.setBackgroundColor(colors.red)
+	write(" X ")
+	term.setBackgroundColor(colors.black)
+	
+end
+
+function drawObject(number)
+	term.setBackgroundColor(object[number]["color"])
+	
+	for y=object[number]["y1"],object[number]["y2"],1 do
+		for x=object[number]["x1"],object[number]["x2"],1 do
+			term.setCursorPos(x,y)
+			write(" ")
+		end
+	end
+	term.setTextColor(colors.black)
+	term.setCursorPos(object[number]["x1"],object[number]["y1"])
+	--write(number)
+	term.setBackgroundColor(colors.black)
+end
+
+function newObject()
+	startx = -1
+	starty = -1
+	while true do
+		term.setBackgroundColor(colors.black)
+		Event,key,xclick,yclick = os.pullEvent()
+		if(Event=="mouse_drag" or Event=="mouse_click")then
+			shell.run("clear")
+			for place=1,#object,1 do
+				drawObject(place)
+			end
+			if(xclick==startx or startx==-1)then
+				if(yclick==starty or starty==-1)then
+					startx = xclick 
+					starty = yclick
+				end
+			else
+				term.setBackgroundColor(colors.gray)
+				term.setCursorPos(startx,yclick)
+				if(yclick<=starty)then
+					for derp=1,starty-yclick,1 do 
+						write(" ") 
+						term.setCursorPos(startx,yclick+derp)
+					end
+				else
+					for derp=1,yclick-starty,1 do 
+						write(" ") 
+						term.setCursorPos(startx,yclick-derp)
+					end
+				end
+				if(xclick>=startx)then
+					term.setCursorPos(startx,starty)
+					for derp=1,xclick-startx,1 do 
+						write(" ")
+					end
+				else
+					term.setCursorPos(xclick+1,starty)
+					for derp=1,startx-xclick,1 do 
+						write(" ")
+					end
+				end
+				if(xclick>=startx)then
+					term.setCursorPos(startx,yclick)
+					for derp=1,xclick-startx,1 do 
+						write(" ")
+					end
+				else
+					term.setCursorPos(xclick,yclick)
+					for derp=1,startx-xclick,1 do 
+						write(" ")
+					end
+				end
+				term.setCursorPos(xclick,yclick)
+				if(yclick<=starty)then
+					for derp=1,starty-yclick+1,1 do 
+						write(" ") 
+						term.setCursorPos(xclick,yclick+derp)
+					end
+				else
+					for derp=1,yclick-starty+1,1 do 
+						write(" ") 
+						term.setCursorPos(xclick,yclick-derp)
+					end
+				end
+				term.setCursorPos(startx,starty)
+				write(startx..","..starty)
+				term.setCursorPos(xclick-4,yclick)
+				write(xclick..","..yclick)
+				oldx = xclick
+				oldy = yclick
+			end
+		elseif(Event=="key")then
+			if(key==keys.enter)then
+				shell.run("clear")
+				if(oldx<startx)then
+					if(oldy<starty)then
+						newx = oldx
+						newy = oldy
+						l = startx-oldx
+						w = starty-oldy
+					else
+						newx = oldx
+						newy = starty
+						l = startx-oldx
+						w = oldy-starty
+					end
+				else
+					if(oldy<starty)then
+						newx = startx
+						newy = oldy
+						l = oldx-startx
+						w = starty-oldy
+					else	
+						newy = starty
+						newx = startx
+						l = oldx-startx
+						w = oldy-starty
+					end
+				end
+				term.setBackgroundColor(colors.black)
+				timer = os.startTimer(.01)
+				return startx,starty,oldx,oldy
+			end
+		end	
+	end
+end
+
+function rotateBlock(number)
+	temp = object[selected]["xlength"]
+	object[selected]["xlength"] = object[selected]["ylength"]
+	object[selected]["ylength"] = temp
+	if(number%2==0)then
+		object[selected]["x2"] = object[selected]["x1"]+object[selected]["xlength"]*2
+		object[selected]["y2"] = object[selected]["y1"]+object[selected]["ylength"]/2
+	else
+		object[selected]["x2"] = object[selected]["x1"]+object[selected]["xlength"]
+		object[selected]["y2"] = object[selected]["y1"]+object[selected]["ylength"]
+	end
+end
+
+function drawMenu()
+	term.setTextColor(colors.white)
+	term.setBackgroundColor(colors.white)
+	for y=1,6,1 do
+		for x=1,16,1 do
+			term.setCursorPos(object[selected]["x1"]-17+x,object[selected]["y1"]-6+y)
+			write(" ")
+		end
+	end
+	term.setBackgroundColor(colors.gray)
+	term.setCursorPos(object[selected]["x1"]-16,object[selected]["y1"]-6)
+	for place=1,16,1 do
+		write(" ")
+	end
+	term.setCursorPos(object[selected]["x1"]-16,object[selected]["y1"]-6)
+	write("Block "..selected)
+	term.setBackgroundColor(colors.red)
+	term.setCursorPos(object[selected]["x1"]-6,object[selected]["y1"]-6)
+	write("Delete")
+	term.setBackgroundColor(colors.white)
+	term.setTextColor(colors.black)
+	term.setCursorPos(object[selected]["x1"]-16,object[selected]["y1"]-5)
+	write("X: "..object[selected]["x1"].." Y: "..object[selected]["y1"])
+	local count = 1
+	for y=0,2,1 do
+		for x=0,3,1 do
+			term.setCursorPos(object[selected]["x1"]-16+(x*2),object[selected]["y1"]-4+(y*2))
+			term.setBackgroundColor(colorTable[count])
+			write(" ")
+			count = count+1
+		end
+	end
+	term.setBackgroundColor(colors.white)
+	term.setCursorPos(object[selected]["x1"]-7,object[selected]["y1"]-4)
+	--write("Rotate")
+	term.setBackgroundColor(colors.black)
+end
+
+function openMenu()
+	rotationCount = 0
+	while true do
+		shell.run("clear")
+		print(#object)
+		for place=1,#object,1 do
+			drawObject(place)
+		end
+		drawMenu()
+		Event,key,xclick,yclick = os.pullEvent("mouse_click")
+		if(yclick==object[selected]["y1"]-6)then
+			if(xclick>=object[selected]["x1"]-6 and xclick<=object[selected]["x1"]-1)then
+				deleteBlock()
+				timer = os.startTimer(.01)
+				return
+			end
+		elseif(yclick>=object[selected]["y1"]-4 and yclick<=object[selected]["y1"])then
+			if(xclick>=object[selected]["x1"]-7 and xclick<=object[selected]["x1"]-1)then
+				if(yclick==object[selected]["y1"]-4)then
+					--rotateBlock(rotationCount)
+					rotationCount = rotationCount+1
+				end
+			else
+				local count = 1 
+				for y=0,2,1 do
+					for x=0,3,1 do
+						if(object[selected]["x1"]-16+(x*2)==xclick and object[selected]["y1"]-4+(y*2)==yclick)then
+							object[selected]["color"] = colorTable[count]
+							timer = os.startTimer(.01)
+							return
+						end
+						count = count+1
+					end
+				end
+			end
+		else
+			timer = os.startTimer(.01)
+			return	
+		end
+	end
+end
+
+function deleteBlock()
+	object[selected] = {}
+	temp = {}
+	count = 1
+	for place=1,#object,1 do
+		if(object[place]["x1"]~=nil)then
+			temp[count] = object[place]
+			count = count+1
+		end	
+	end
+	object = temp
+	selected = 0
+end
+
+timer = os.startTimer(.01)
+
+while true do
+	shell.run("clear")
+	--print(#object)
+	for place=1,#object,1 do
+		drawObject(place)
+	end
+	drawOptions()
+	Event,pram1,pram2,pram3 = os.pullEvent()
+	if(Event=="mouse_drag" or Event=="mouse_click")then
+		if(Event=="mouse_click")then
+			if(pram1==1)then
+				if(pram3==1)then
+					if(pram2>=1 and pram2<=7)then
+						if(gravity)then
+							gravity=false
+						else
+							gravity=true
+						end
+					elseif(pram2>=9 and pram2<=18)then
+						if(collisions)then
+							collisions=false
+						else
+							collisions=true
+						end
+					elseif(pram2>=20 and pram2<=25)then
+						if(noclip)then
+							noclip=false
+						else
+							noclip=true
+						end
+					elseif(pram2>=49)then
+						break	
+					end
+				end
+				for place=1,#object,1 do
+					if(pram2>=object[place]["x1"] and pram2<=object[place]["x2"])then
+						if(pram3>=object[place]["y1"] and pram3<=object[place]["y2"])then
+							drag = true
+							selected = place
+							break
+						else
+							drag = false
+							selected = 0
+						end
+					else
+						drag = false
+						selected = 0
+					end
+				end
+			elseif(pram1==2 and selected>0)then
+				openMenu()
+				shell.run("clear")
+				print(#object)
+				for place=1,#object,1 do
+					drawObject(place)
+				end
+			elseif(pram1==2 and selected==0)then
+				local a,b,c,d = newObject()
+				object[#object+1] = {}
+				if(a>c)then
+					object[#object]["x1"] = c
+					object[#object]["x2"] = a
+				else
+					object[#object]["x1"] = a
+					object[#object]["x2"] = c
+				end
+				
+				if(b>d)then
+					object[#object]["y1"] = d
+					object[#object]["y2"] = b
+				else
+					object[#object]["y1"] = b
+					object[#object]["y2"] = d
+				end
+				object[#object]["color"] = colors.white
+				object[#object]["xlength"] = math.abs(object[#object]["x2"]-object[#object]["x1"])
+				object[#object]["ylength"] = math.abs(object[#object]["y2"]-object[#object]["y1"])
+			end
+		elseif(drag)then
+			object[selected]["x1"] = math.ceil(pram2-(object[selected]["xlength"]/2))
+			object[selected]["y1"] = math.ceil(pram3-(object[selected]["ylength"]/2))
+			--object[selected]["x1"] = pram2
+			--object[selected]["y1"] = pram3
+			object[selected]["x2"] = object[selected]["x1"]+object[selected]["xlength"]
+			object[selected]["y2"] = object[selected]["y1"]+object[selected]["ylength"]
+		end
+	elseif(Event=="timer" and pram1==timer)then
+		for place=1,#object,1 do					--cycles through objects
+			if(selected~=place)then					--prevents gravity to be applied to the object you are holding
+				if(object[place]["y2"]<19)then		--on the bottom of the screen
+					for derp=1,#object,1 do			--cycles through object to test for collisions
+						if(derp~=place)then			--makes sure its not testing its self
+							if(object[place]["y2"]>=object[derp]["y1"] and object[place]["y1"]<=object[derp]["y2"])then --tests for noclip
+								--print("derp")
+								--sleep(1)
+								if(object[place]["x1"]>=object[derp]["x1"] and object[place]["x1"]<=object[derp]["x2"])then
+									inside = true
+									break
+								elseif(object[place]["x2"]>=object[derp]["x1"] and object[place]["x2"]<=object[derp]["x2"])then
+									inside = true
+									break
+								elseif(object[place]["x1"]<=object[derp]["x1"] and object[place]["x2"]>=object[derp]["x1"])then
+									inside = true
+									break
+								else
+									inside = false
+								end	
+							elseif(object[derp]["y1"]-1<=object[place]["y2"] and object[derp]["y2"]>=object[place]["y1"])then --tests for collisions
+								if(object[place]["x1"]>=object[derp]["x1"] and object[place]["x1"]<=object[derp]["x2"])then
+									below = true
+									break
+								elseif(object[place]["x2"]>=object[derp]["x1"] and object[place]["x2"]<=object[derp]["x2"])then
+									below = true
+									break
+								elseif(object[place]["x1"]<=object[derp]["x1"] and object[place]["x2"]>=object[derp]["x1"])then
+									below = true
+									break
+								else
+									below = false
+								end
+							else
+								below = false
+								inside = false
+							end
+						end
+					end  
+					if(not collisions)then
+						below = false
+					end
+					if(noclip)then
+						inside = false
+					end
+					if(inside)then
+						object[place]["y1"] = object[place]["y1"]-1
+						object[place]["y2"] = object[place]["y2"]-1
+					end
+					if(not below and gravity)then
+						object[place]["y1"] = object[place]["y1"]+1
+						object[place]["y2"] = object[place]["y2"]+1
+					end
+				end
+			end
+		end
+		timer = os.startTimer(.01)
+	end
+end

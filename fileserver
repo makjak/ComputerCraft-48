@@ -1,0 +1,137 @@
+local tArgs = {...}
+local window = 0
+local version = "0.5"
+running = true
+requests = {"yes","no","maybe","so","this is a test message","test"}
+
+function clear()
+	term.setBackgroundColor(colors.black)
+	term.clear()
+	term.setCursorPos(1,1)
+end
+
+function title()
+	term.setCursorPos(1,1)
+	local x,y = term.getSize()
+	print("File Cloud Server  v"..version.."   Total: "..addSpaces(#requests,4).."   "..fs.getFreeSpace("fileServer").." Spots left")
+	for derp = 1,x,1 do
+		write("-")
+	end
+end
+
+function addSpaces(thing,number)
+	temp = tostring(thing)
+	for place=1,number-string.len(temp),1 do
+		temp = temp.." "
+	end
+	return(temp)
+end
+
+function openPort()
+	for _ ,m in ipairs(rs.getSides()) do 
+		if peripheral.isPresent(m) and peripheral.getType(m)=="modem" then 
+			rednet.open(m)
+			return true
+		end 
+	end
+	return false
+end
+
+function showRequests()
+	local x,y = term.getSize()
+	if(#requests>y-2)then
+		window = #requests-y+2
+	else
+		window = 0
+	end
+	for i=1,#requests,1 do
+		term.setCursorPos(1,2-window+i)
+		write(addSpaces(i,4).."|"..requests[i])
+	end
+	term.setCursorPos(15,1)
+	title()
+end
+
+function showPage()
+	clear()
+	title()
+	if(#tArgs==0)then
+		showRequests()
+	elseif(tArgs[1]=="-g")then
+		print("Server Running...")
+	else
+		clear()
+		term.setTextColor(colors.red)
+		print("Incorrect syntax     fileserver <-g>")
+		running = false
+		os.startTimer(.1)
+	end
+end
+
+function parcemessage(message,id)
+	count = 1
+	local prams = {}
+	for token in string.gmatch(message, "[^%s]+") do
+	   prams[count]=token
+	   count = count+1
+	end
+	if(#prams>2)then
+		local temp = ""
+		for i=4,#prams,1 do
+			temp = temp+prams[i]
+		end
+		prams[4] = temp
+	end
+	
+	if(prams[1]=="addFile")then
+		if(fs.exists(prams[3]==false))then
+			local open=fs.open("fileServer/files/"..prams[3] , "w")
+			open.writeLine(prams[2])
+			open.close()
+			open.writeLine(prams[4])
+			rednet.send(id,true)
+			requests[#requests+1] = prams[2].." add file "..prams[3]
+		else
+			rednet.send(id,false)
+		end
+	elseif(prams[1]=="retrieveFile")then
+		--local open=fs.open("fileServer/files/"..prams[2] , "r")
+		for line in io.lines("fileServer/files/"..prams[2]) do 
+			program = program+line
+		end 
+		requests[#requests+1] = prams[2].." downloaded file "..prams[3]
+		rednet.send(id,program)
+	elseif(prams[1]=="getFiles")then
+		local files = {}
+		for _,file in ipairs( "fileServer/files" ) do
+			local open=fs.open("fileServer/files/"..file , "r")
+			author = open.readLine()
+			open.close()
+			files[#files+1] = author.."-"..file
+		end
+		requests[#requests+1] = prams[2].." requested files"
+		rednet.send(id,textutils.serialize(files))
+	end
+end
+	
+if(openPort()==false)then
+	clear()
+	term.setTextColor(colors.red)
+	print("No modem found")
+	running = false
+	os.startTimer(.1)
+end
+if(fs.exists("fileServer")==false)then
+	fs.makeDir("fileServer")
+	local open = fs.open("fileServer/files" , "w")
+	open.close()
+end
+while running do
+	showPage()
+	requests[#requests+1] = "test"
+	os.startTimer(1)
+	local Event,clientID,message,distance = os.pullEvent()
+	if(Event=="rednet_message")then
+		parcemessage(message,clientID)
+	end
+end

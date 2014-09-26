@@ -1,0 +1,32 @@
+rednet.open("back")
+main = 72
+function clear()
+  term.clear()
+  term.setCursorPos(1,1)
+end
+
+while true do
+  clear()
+  print("Enter command: ")
+  command = io.read()
+  if command == "" then
+    command = oldcommand
+    term.setCursorPos(1,2)
+    print(command)
+  end
+  rednet.send(main,command)
+  local ID,message,distance = rednet.receive(1)
+  print()
+  --if(textutils.unserialize(message)~=nil)then
+  --  newtable = textutils.unserialize(message)
+  --  for x=0,table.getn(newtable),1 do
+  --    print(newtable[x])
+  --  end
+  --else
+  print(message)
+  --end
+  print()
+  print("Hit Enter")
+  os.pullEvent("key")
+  oldcommand = command
+end

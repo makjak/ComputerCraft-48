@@ -1,0 +1,2 @@
+test = {name = "0"}
+print(tostring(tonumber(test.name)+2))

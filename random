@@ -1,0 +1,14 @@
+shell.run("clear")
+term.setBackgroundColor(colors.white)
+for x=1,25,1 do
+  term.setCursorPos(x*2-1,9)
+  write(" ")
+end
+for y=1,19,1 do
+  term.setCursorPos(25,y*2-1)
+  write(" ")
+end
+for x=1,51,1 do
+  term.setCursorPos(x,-.2*(x-25)*(x-26)+19)
+  write(" ")
+end

@@ -1,0 +1,538 @@
+content = 
+{
+	page1 = 
+	{
+		background = nil,
+		visible = false,
+		setBackground = function(path)
+			content.page1.background = paintutils.loadImage(path)
+		end,
+		getBackground = function()
+			return content.page1.background
+		end,
+		getPageContent = function()
+			return pageContent
+		end,
+		setVisable = function(vis)
+			visible = vis
+		end,
+		pageContent = 
+		{
+			buttons = {},
+			labels = {},
+			dropDowns = {},
+			images = {},
+			scrollBars = {},
+			getButtons = function()
+				return content.page1.pageContent.buttons
+			end,
+			addButton = function(text,xpos,ypos,wid,high,c,tc,f)
+				content.page1.pageContent.buttons[#content.page1.pageContent.buttons+1] = 
+									  {name = text,x = xpos,y = ypos
+									  ,width = wid,height = high,color = c
+									  ,textcolor = tc, buttonFunction = f}
+				return #content.page1.pageContent.buttons
+			end,
+			drawButton = function(index)
+				b = content.page1.pageContent.buttons[index]
+				drawing.fillArea(b.color,b.x,b.y,b.width,b.height)      
+				drawing.writeTextCentered(b.name,b.x,b.y,b.width,b.height,b.textcolor,b.color)
+			end,
+			getLabels = function()
+				return content.page1.pageContent.labels
+			end,
+			addLabel = function(text,xpos,ypos,l,cent,c,tc)
+				content.page1.pageContent.labels[#content.page1.pageContent.labels+1] = 
+									{name = text,x = xpos,y = ypos,labelLength = l,centered = cent,color = c,textcolor = tc}
+			end,
+			setLabelText = function(index,text)
+				content.page1.pageContent.labels[index].name = text
+			end,
+			drawLabel = function(index)
+
+				b = content.page1.pageContent.labels[index]
+				drawing.fillArea(b.color,b.x,b.y,b.labelLength,1)
+				if(b.centered)then
+					drawing.writeTextCentered(b.name,b.x,b.y,b.labelLength,1,b.textcolor,b.color)
+				else
+					drawing.writeText(b.name,b.x,b.y,b.textcolor,b.color)
+				end
+			end,
+			addImage = function(i,xpos,ypos)
+				content.page1.pageContent.images[#content.page1.pageContent.images+1] = {image = paintutils.loadImage(i),x = xpos,y = ypos}
+			end,
+			getImages = function()
+				return content.page1.pageContent.images
+			end,
+			drawImage = function(index)
+				i=content.page1.pageContent.images[index]
+				drawing.displayImage(i.image,i.x,i.y)
+			end,
+			addDropDown = function(n,xpos,ypos,l,c,tc,ddc,ddtc)
+				content.page1.pageContent.dropDowns[#content.page1.pageContent.dropDowns+1] = {name = n,x = xpos,y = ypos,dropDownLength = l,color = c,textColor = tc, dropDownColor = ddc,dropDownTextColor = ddtc,visible = false,elements = {}}
+			end,
+			addDropDownElement = function(index,n,f)
+				content.page1.pageContent.dropDowns[index].elements[#content.page1.pageContent.dropDowns[index].elements+1] = {name = n,elementFunction = f}
+			end,
+			drawDropDown = function(index)
+				d=content.page1.pageContent.dropDowns[index]
+				drawing.fillArea(d.color,d.x,d.y,d.dropDownLength,1)
+				drawing.writeText(d.name,d.x,d.y,d.color,d.textColor)
+				drawing.fillArea(d.dropDownColor,d.x,d.y+1,d.dropDownLength,#content.page3.pageContent.dropDowns[index].elements)
+				if(visible)then
+					for i=1,#content.page3.pageContent.dropDowns[index].elements,1 do
+						drawing.writeText(d.elements[x].name,d.x,d.y+i,d.dropDownColor,d.dropDownTextColor)
+					end
+				end
+			end,
+			getDropDowns = function()
+				return content.page1.pageContent.dropDowns
+			end,
+			addScrollBar = function(xpos,ypos,l,ia,s,bgc,bc,ac,tc)
+				content.page1.pageContent.scrollBars[#content.page1.pageContent.scrollBars+1] = {x = xpos,y = ypos,length = l,itemAmount = ia,sideWays = s,backGroundColor = bgc,barColor = bc,arrowColor = ac,textColor = tc,scroll = 0}
+			end,
+			getScrollBars = function()
+				return content.page1.pageContent.scrollBars
+			end,
+			drawScrollBar = function(index)
+				s = content.page1.pageContent.scrollBars
+				if(s.sideWays)then
+					drawing.fillArea(s.backGroindColor,s.x,s.y,s.length,1)
+					drawing.writeText("<",s.x,s.y,s.textColor,s.ArrowColor)
+					drawing.writeText(">",s.x+s.length,s.y,s.textColor,s.ArrowColor)
+				else
+					drawing.fillArea(s.backGroindColor,s.x,s.y,1,s.length)
+					drawing.writeText("^",s.x,s.y,s.textColor,s.ArrowColor)
+					drawing.writeText("v",s.x,s.y+s.length,s.textColor,s.ArrowColor)
+				end
+				
+				local barLength  = s.length
+				if(s.itemAmount>=s.length*2-1)then
+					barLength = 1
+				elseif(s.itemAmount>=s.length)then
+					barLength = s.length-s.itemAmount
+				end
+				if(s.sideWays)then
+					drawing.fillArea(s.barColor,s.x+s.scroll,s.y,s.x+s.barLength,1)
+				else
+					drawing.fillArea(s.barColor,s.x,s.y+s.scroll,1,s.y+s.barLength)
+				end
+			end
+		}
+		
+	},
+	page2 = 
+	{
+		background = nil,
+		visible = false,
+		setBackground = function(path)
+			content.page2.background = paintutils.loadImage(path)
+		end,
+		getBackground = function()
+			return content.page2.background
+		end,
+		getPageContent = function()
+			return pageContent
+		end,
+		setVisable = function(vis)
+			visible = vis
+		end,
+		pageContent = 
+		{
+			buttons = {},
+			labels = {},
+			dropDowns = {},
+			images = {},
+			scrollBars = {},
+			getButtons = function()
+				return content.page2.pageContent.buttons
+			end,
+			addButton = function(text,xpos,ypos,wid,high,c,tc,f)
+				content.page2.pageContent.buttons[#content.page2.pageContent.buttons+1] = 
+									  {name = text,x = xpos,y = ypos
+									  ,width = wid,height = high,color = c
+									  ,textcolor = tc, buttonFunction = f}
+				return #content.page2.pageContent.buttons
+			end,
+			drawButton = function(index)
+				b = content.page2.pageContent.buttons[index]
+				drawing.fillArea(b.color,b.x,b.y,b.width,b.height)      
+				drawing.writeTextCentered(b.name,b.x,b.y,b.width,b.height,b.textcolor,b.color)
+			end,
+			getLabels = function()
+				return content.page2.pageContent.labels
+			end,
+			addLabel = function(text,xpos,ypos,l,cent,c,tc)
+				content.page2.pageContent.labels[#content.page2.pageContent.labels+1] = 
+									{name = text,x = xpos,y = ypos,labelLength = l,centered = cent,color = c,textcolor = tc}
+			end,
+			setLabelText = function(index,text)
+				content.page2.pageContent.labels[index].name = text
+			end,
+			drawLabel = function(index)
+
+				b = content.page2.pageContent.labels[index]
+				drawing.fillArea(b.color,b.x,b.y,b.labelLength,1)
+				if(b.centered)then
+					drawing.writeTextCentered(b.name,b.x,b.y,b.labelLength,1,b.textcolor,b.color)
+				else
+					drawing.writeText(b.name,b.x,b.y,b.textcolor,b.color)
+				end
+			end,
+			addImage = function(i,xpos,ypos)
+				content.page2.pageContent.images[#content.page2.pageContent.images+1] = {image = paintutils.loadImage(i),x = xpos,y = ypos}
+			end,
+			getImages = function()
+				return content.page2.pageContent.images
+			end,
+			drawImage = function(index)
+				i=content.page2.pageContent.images[index]
+				drawing.displayImage(i.image,i.x,i.y)
+			end,
+			addDropDown = function(n,xpos,ypos,l,c,tc,ddc,ddtc)
+				content.page2.pageContent.dropDowns[#content.page2.pageContent.dropDowns+1] = {name = n,x = xpos,y = ypos,dropDownLength = l,color = c,textColor = tc, dropDownColor = ddc,dropDownTextColor = ddtc,visible = false,elements = {}}
+			end,
+			addDropDownElement = function(index,n,f)
+				content.page2.pageContent.dropDowns[index].elements[#content.page2.pageContent.dropDowns[index].elements+1] = {name = n,elementFunction = f}
+			end,
+			drawDropDown = function(index)
+				d=content.page2.pageContent.dropDowns[index]
+				drawing.fillArea(d.color,d.x,d.y,d.dropDownLength,1)
+				drawing.writeText(d.name,d.x,d.y,d.color,d.textColor)
+				drawing.fillArea(d.dropDownColor,d.x,d.y+1,d.dropDownLength,#content.page3.pageContent.dropDowns[index].elements)
+				if(visible)then
+					for i=1,#content.page3.pageContent.dropDowns[index].elements,1 do
+						drawing.writeText(d.elements[x].name,d.x,d.y+i,d.dropDownColor,d.dropDownTextColor)
+					end
+				end
+			end,
+			getDropDowns = function()
+				return content.page2.pageContent.dropDowns
+			end,
+			addScrollBar = function(xpos,ypos,l,ia,s,bgc,bc,ac,tc)
+				content.page2.pageContent.scrollBars[#content.page2.pageContent.scrollBars+1] = {x = xpos,y = ypos,length = l,itemAmount = ia,sideWays = s,backGroundColor = bgc,barColor = bc,arrowColor = ac,textColor = tc,scroll = 0}
+			end,
+			getScrollBars = function()
+				return content.page2.pageContent.scrollBars
+			end,
+			drawScrollBar = function(index)
+				s = content.page2.pageContent.scrollBars
+				if(s.sideWays)then
+					drawing.fillArea(s.backGroindColor,s.x,s.y,s.length,1)
+					drawing.writeText("<",s.x,s.y,s.textColor,s.ArrowColor)
+					drawing.writeText(">",s.x+s.length,s.y,s.textColor,s.ArrowColor)
+				else
+					drawing.fillArea(s.backGroindColor,s.x,s.y,1,s.length)
+					drawing.writeText("^",s.x,s.y,s.textColor,s.ArrowColor)
+					drawing.writeText("v",s.x,s.y+s.length,s.textColor,s.ArrowColor)
+				end
+				
+				local barLength  = s.length
+				if(s.itemAmount>=s.length*2-1)then
+					barLength = 1
+				elseif(s.itemAmount>=s.length)then
+					barLength = s.length-s.itemAmount
+				end
+				if(s.sideWays)then
+					drawing.fillArea(s.barColor,s.x+s.scroll,s.y,s.x+s.barLength,1)
+				else
+					drawing.fillArea(s.barColor,s.x,s.y+s.scroll,1,s.y+s.barLength)
+				end
+			end
+		}
+	},
+	page3 = 
+	{
+		background = nil,
+		visible = false,
+		setBackground = function(path)
+			content.page3.background = paintutils.loadImage(path)
+		end,
+		getBackground = function()
+			return content.page3.background
+		end,
+		getPageContent = function()
+			return pageContent
+		end,
+		setVisable = function(vis)
+			visible = vis
+		end,
+		pageContent = 
+		{
+			buttons = {},
+			labels = {},
+			dropDowns = {},
+			images = {},
+			scrollBars = {},
+			getButtons = function()
+				return content.page3.pageContent.buttons
+			end,
+			addButton = function(text,xpos,ypos,wid,high,c,tc,f)
+				content.page3.pageContent.buttons[#content.page3.pageContent.buttons+1] = 
+									  {name = text,x = xpos,y = ypos
+									  ,width = wid,height = high,color = c
+									  ,textcolor = tc, buttonFunction = f}
+				return #content.page3.pageContent.buttons
+			end,
+			drawButton = function(index)
+				b = content.page3.pageContent.buttons[index]
+				drawing.fillArea(b.color,b.x,b.y,b.width,b.height)      
+				drawing.writeTextCentered(b.name,b.x,b.y,b.width,b.height,b.textcolor,b.color)
+			end,
+			getLabels = function()
+				return content.page3.pageContent.labels
+			end,
+			addLabel = function(text,xpos,ypos,l,cent,c,tc)
+				content.page3.pageContent.labels[#content.page3.pageContent.labels+1] = 
+									{name = text,x = xpos,y = ypos,labelLength = l,centered = cent,color = c,textcolor = tc}
+			end,
+			setLabelText = function(index,text)
+				content.page3.pageContent.labels[index].name = text
+			end,
+			drawLabel = function(index)
+
+				b = content.page3.pageContent.labels[index]
+				drawing.fillArea(b.color,b.x,b.y,b.labelLength,1)
+				if(b.centered)then
+					drawing.writeTextCentered(b.name,b.x,b.y,b.labelLength,1,b.textcolor,b.color)
+				else
+					drawing.writeText(b.name,b.x,b.y,b.textcolor,b.color)
+				end
+			end,
+			addImage = function(i,xpos,ypos)
+				content.page3.pageContent.images[#content.page3.pageContent.images+1] = {image = paintutils.loadImage(i),x = xpos,y = ypos}
+			end,
+			getImages = function()
+				return content.page3.pageContent.images
+			end,
+			drawImage = function(index)
+				i=content.page3.pageContent.images[index]
+				drawing.displayImage(i.image,i.x,i.y)
+			end,
+			addDropDown = function(n,xpos,ypos,l,c,tc,ddc,ddtc)
+				content.page3.pageContent.dropDowns[#content.page3.pageContent.dropDowns+1] = {name = n,x = xpos,y = ypos,dropDownLength = l,color = c,textColor = tc, dropDownColor = ddc,dropDownTextColor = ddtc,visible = false,elements = {}}
+			end,
+			addDropDownElement = function(index,n,f)
+				content.page3.pageContent.dropDowns[index].elements[#content.page3.pageContent.dropDowns[index].elements+1] = {name = n,elementFunction = f}
+			end,
+			drawDropDown = function(index)
+				d=content.page3.pageContent.dropDowns[index]
+				drawing.fillArea(d.color,d.x,d.y,d.dropDownLength,1)
+				drawing.writeText(d.name,d.x,d.y,d.color,d.textColor)
+				if(content.page3.pageContent.dropDowns[index].visible)then
+					drawing.fillArea(d.dropDownColor,d.x,d.y+1,d.dropDownLength,#content.page3.pageContent.dropDowns[index].elements)
+					for i=1,#content.page3.pageContent.dropDowns[index].elements,1 do
+						drawing.writeText(d.elements[i].name,d.x,d.y+i,d.dropDownColor,d.dropDownTextColor)
+					end
+				end
+			end,
+			getDropDowns = function()
+				return content.page3.pageContent.dropDowns
+			end,
+			addScrollBar = function(xpos,ypos,l,ia,s,bgc,bc,ac,tc)
+				content.page3.pageContent.scrollBars[#content.page3.pageContent.scrollBars+1] = {x = xpos,y = ypos,length = l,itemAmount = ia,sideWays = s,backGroundColor = bgc,barColor = bc,arrowColor = ac,textColor = tc,scroll = 0}
+			end,
+			getScrollBars = function()
+				return content.page3.pageContent.scrollBars
+			end,
+			drawScrollBar = function(index)
+				s = content.page3.pageContent.scrollBars[index]
+				if(s.sideWays)then
+					drawing.fillArea(s.backGroundColor,s.x+1,s.y,s.length,1)
+					drawing.writeText("<",s.x,s.y,s.arrowColor,s.textColor)
+					drawing.writeText(">",s.x+s.length+1,s.y,s.arrowColor,s.textColor)
+				else
+					drawing.fillArea(s.backGroundColor,s.x,s.y+1,1,s.length)
+					drawing.writeText("^",s.x,s.y,s.arrowColor,s.textColor)
+					drawing.writeText("v",s.x,s.y+s.length+1,s.arrowColor,s.textColor)
+				end
+				
+				local barLength = s.length
+				if(s.itemAmount>=s.length*2-1)then
+					barLength = 1
+				elseif(s.itemAmount>=s.length)then
+					barLength = s.length-(s.itemAmount-s.length)
+				end
+				if(s.sideWays)then
+					drawing.fillArea(s.barColor,s.x+s.scroll+1,s.y,s.x+barLength,1)
+				else
+					drawing.fillArea(s.barColor,s.x,s.y+s.scroll+1,1,s.y+barLength)
+				end
+			end
+		}
+	},
+	pages = {}
+}
+
+content.pages = 
+	{
+		content.page1,
+		content.page2,
+		content.page3
+	}
+
+drawing = 
+{
+	displayImage = function(image,x,y)
+		paintutils.drawImage(image,x,y)
+	end,
+	fillArea = function(color,xpos,ypos,wid,high)
+		term.setCursorPos(1,1)
+
+		term.setBackgroundColor(color)
+		for y=ypos,ypos+high-1,1 do
+			for x=xpos,xpos+wid-1,1 do
+				term.setCursorPos(x,y)
+				write(" ")
+			end
+		end
+	end,
+	writeText = function(text,x,y,color,bgcolor)
+		term.setBackgroundColor(color)
+		term.setCursorPos(x,y)
+		write(text)
+	end,
+	writeTextCentered = function(text,x,y,wid,high,color,bgcolor)
+		term.setCursorPos(x+(wid-#text)/2,y+high/2)
+		term.setTextColor(color)
+		term.setBackgroundColor(bgcolor)
+		term.write(text)
+	end,
+	clear = function()
+		term.setBackgroundColor(colors.black)
+		term.clear()
+		term.setCursorPos(1,1)
+	end
+}
+function drawPageContent()
+	showButtons(currentPage.pageContent.getButtons())
+	showLabels(currentPage.pageContent.getLabels())
+	showImages(currentPage.pageContent.getImages())
+	showDropDowns(currentPage.pageContent.getDropDowns())
+	showScrollBars(currentPage.pageContent.getScrollBars())
+end
+
+function showButtons(buttons)
+	for x=1,#buttons,1 do
+		currentPage.pageContent.drawButton(x)
+	end
+end
+
+function showLabels(labels)
+	for x=1,#labels,1 do
+		currentPage.pageContent.drawLabel(x)
+	end
+end
+
+function showImages(images)
+	for x=1,#images,1 do
+		currentPage.pageContent.drawImage(x)
+	end
+end
+
+function showDropDowns(dropDowns)
+	for x=1,#dropDowns,1 do
+		currentPage.pageContent.drawDropDown(x)
+	end
+end
+
+function showScrollBars(scrollBars)
+	for x=1,#scrollBars,1 do
+		currentPage.pageContent.drawScrollBar(x)
+	end
+end
+
+function analyseClick(xpos,ypos)
+	buttons = currentPage.pageContent.getButtons()
+	for i=1,#buttons,1 do
+		if(xpos>=buttons[i].x and xpos<=buttons[i].x+buttons[i].width-1) then
+			if(ypos>=buttons[i].y and ypos<=buttons[i].y+buttons[i].height-1) then
+				buttons[i].buttonFunction()
+			end
+		end
+	end
+	dropDowns = currentPage.pageContent.getDropDowns()
+	for i=1,#dropDowns,1 do
+		if(xpos>=dropDowns[i].x and xpos<=dropDowns[i].x+dropDowns[i].dropDownLength-1) then
+			if(ypos==dropDowns[i].y) then
+				dropDowns[i].visible = not dropDowns[i].visible
+			elseif (dropDowns[i].visible) then 	
+				for a=1,#dropDowns[i].elements,1 do
+					if(ypos==dropDowns[i].y+a) then
+						dropDowns[i].elements[a].elementFunction()
+					end
+				end
+			end
+		end
+	end
+	scrollBars = currentPage.pageContent.getScrollBars()
+	for i=1,#scrollBars,1 do
+		local barLength = scrollBars[i].length
+		if(scrollBars[i].itemAmount>=scrollBars[i].length*2-1)then
+			barLength = 1
+		elseif(scrollBars[i].itemAmount>=scrollBars[i].length)then
+			barLength = scrollBars[i].length-(scrollBars[i].itemAmount-scrollBars[i].length)
+		end
+		if(xpos==scrollBars[i].x) then
+			if(ypos==scrollBars[i].y) then
+				if(scrollBars[i].scroll>0)then
+					scrollBars[i].scroll = scrollBars[i].scroll-1
+				end
+			end
+		end
+		if(xpos==scrollBars[i].x+scrollBars[i].length+1) then
+			if(ypos==scrollBars[i].y) then
+				if(scrollBars[i].scroll+barLength+1<scrollBars[i].length)then
+					scrollBars[i].scroll = scrollBars[i].scroll+1
+				end
+			end
+		end
+		if(xpos==scrollBars[i].x) then
+			if(ypos==scrollBars[i].y+scrollBars[i].length+1) then
+				if(scrollBars[i].scroll+barLength+1<scrollBars[i].length)then
+					scrollBars[i].scroll = scrollBars[i].scroll+1
+				end
+			end
+		end
+	end
+end 
+
+function analyseScroll(xpos,ypos,direction)
+
+end
+
+running = true
+currentPage = content.pages[1]
+local termWidth,termHeight = term.getSize()
+
+content.page1.setBackground("page1")
+content.page2.setBackground("page2")
+content.page3.setBackground("page3")
+content.page1.pageContent.addButton("test",15,15,6,3,colors.blue,colors.black,function()end)
+content.page1.pageContent.addButton("Exit",termWidth-5,1,6,3,colors.red,colors.white,function() running = false end)
+content.page1.pageContent.addButton("test2",30,5,7,3,colors.green,colors.black,function()if(content.page1.pageContent.buttons[3].name=="test2")then content.page1.pageContent.buttons[3].name = "boop" else content.page1.pageContent.buttons[3].name = "test2" end end)
+content.page1.pageContent.addButton("Next Page",termWidth-10,termHeight-2,11,3,colors.orange,colors.white,function() currentPage = content.pages[2] end)
+content.page2.pageContent.addButton("Next Page",termWidth-10,termHeight-2,11,3,colors.orange,colors.white,function() currentPage = content.pages[3] end)
+content.page3.pageContent.addButton("Next Page",termWidth-10,termHeight-2,11,3,colors.orange,colors.white,function() currentPage = content.pages[1] end)
+content.page2.pageContent.addLabel("0",5,5,4,true,colors.lightGray,colors.black)
+content.page2.pageContent.addButton("/\\",5,4,4,1,colors.gray,colors.black,function() content.page2.pageContent.setLabelText(1,tostring(tonumber(content.page2.pageContent.labels[1].name)+1))end)
+content.page2.pageContent.addButton("\\/",5,6,4,1,colors.gray,colors.black,function() content.page2.pageContent.setLabelText(1,tostring(tonumber(content.page2.pageContent.labels[1].name)-1))end)
+content.page2.pageContent.addImage("testImage",15,12)
+content.page3.pageContent.addScrollBar(termWidth-11,1,termHeight-2,20,false,colors.lightGray,colors.lime,colors.gray,colors.white)
+content.page3.pageContent.addDropDown("drop Down",1,1,10,colors.lightGray,colors.white,colors.blue,colors.white)
+	content.page3.pageContent.addDropDownElement(1,"test",function()drawing.writeText("boop",content.page3.pageContent.dropDowns[1].x+10,content.page3.pageContent.dropDowns[1].y+1,colors.red,colors.white) sleep(1)end)
+	content.page3.pageContent.addDropDownElement(1,"test2",function()end)
+	content.page3.pageContent.addDropDownElement(1,"test3",function()end)
+content.page3.pageContent.addDropDown("Pages",12,1,10,colors.lightGray,colors.white,colors.blue,colors.white)
+	content.page3.pageContent.addDropDownElement(2,"page 1",function() currentPage = content.pages[1] end)
+	content.page3.pageContent.addDropDownElement(2,"page 2",function() currentPage = content.pages[2] end)
+	content.page3.pageContent.addDropDownElement(2,"page 3",function() currentPage = content.pages[3] end)
+
+while running do
+	drawing.clear()
+	drawing.displayImage(currentPage.getBackground(),1,1)
+	drawPageContent()
+	event, button, x, y = os.pullEvent("mouse_click")
+	analyseClick(x,y)
+end
+drawing.clear()

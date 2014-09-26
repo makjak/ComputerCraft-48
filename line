@@ -1,0 +1,35 @@
+function clear()
+  term.setBackgroundColor(colors.black)
+  shell.run("clear")
+end
+
+while true do
+  Event,key,xclick,yclick = os.pullEvent("mouse_click")
+  clear()
+  firstx = xclick 
+  firsty = yclick
+  term.setCursorPos(firstx,firsty)
+  term.setBackgroundColor(colors.gray)
+  write(" ")
+  Event,key,xclick,yclick = os.pullEvent("mouse_click")
+  secondx = xclick
+  secondy = yclick
+  term.setCursorPos(secondx,secondy)
+  write(" ")
+  slope = (secondy-firsty)/(secondx-firstx)
+  if(firstx>secondx)then
+    startpos = firstx
+    endpos = secondx
+  else
+    startpos = secondx
+    endpos = firstx
+  end
+  b = firsty-(slope*firstx)
+  x = startpos
+  term.setBackgroundColor(colors.white)
+  while x+1~=endpos do
+    term.setCursorPos(x,math.floor(slope*x+b))
+    write(" ")
+    x = x-1
+  end
+end
